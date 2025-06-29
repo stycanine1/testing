@@ -11,7 +11,7 @@
 // ========================================
 const TMDB_CONFIG = {
   // 🔑 Your TMDB API key
-  API_KEY: '76324910ca15f543396c779ace8cb604',
+  API_KEY: '39e5d4874c102b0a9b61639c81b9bda1',
   
   // 🌐 API URLs
   BASE_URL: 'https://api.themoviedb.org/3',
