@@ -238,71 +238,41 @@
                 </div>
             </section>
 
-            <!-- Genre Section -->
-            <section id="genreSection" class="content-section">
-                <div class="section-header">
-                    <h1 id="genreTitle">Genre</h1>
-                    <p id="genreDescription">Browse content by genre</p>
-                </div>
-                <div class="content-rows" id="genreContent">
-                    <!-- Genre content will be populated by JavaScript -->
-                </div>
-            </section>
-        </div>
-    </main>
+          <!-- ...your other HTML above... -->
 
-    <!-- Video Player Modal -->
-    <div class="video-player-modal" id="videoPlayerModal" style="display: none;">
-        <div class="video-player-container">
-            <!-- Close Button -->
-            <button onclick="closeVideoPlayer()" class="video-close-btn">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"/>
-                    <line x1="6" y1="6" x2="18" y2="18"/>
-                </svg>
-            </button>
-
-            <!-- Player Header -->
-            <div class="player-header">
-                <div class="player-logo">
-                    <img src="logo.png" alt="ZETFLIX" onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\'color: #E50914; font-size: 20px; font-weight: bold;\'>ZETFLIX</div>'">
-                </div>
-                <div class="player-title">
-                    <span class="watching-label">You're Watching</span>
-                    <h1 id="playerTitle"></h1>
-                </div>
-            </div>
-
-            <!-- Video Container -->
-            <div class="video-container" id="videoContainer">
-                <iframe id="videoFrame" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" sandbox="allow-same-origin allow-scripts allow-popups allow-presentation allow-forms"></iframe>
-                
-                <!-- Loading Overlay -->
-                <div class="loading-overlay" id="loadingOverlay">
-                    <div class="loading-spinner"></div>
-                    <p>🎬 Loading ZetFlix Player...</p>
-                </div>
-
-                <!-- Error Overlay -->
-                <div class="error-overlay" id="errorOverlay" style="display: none;">
-                    <h3>❌ Streaming Not Available</h3>
-                    <p>Unable to load video source. Try selecting a different server.</p>
-                </div>
-            </div>
-
-            <!-- Player Controls -->
-            <div class="player-controls" id="playerControls">
-                <div class="controls-row">
-                    <!-- Left Controls -->
-                    <div class="controls-left">
-                        <button class="control-btn" id="playBtn" title="Play/Pause" onclick="togglePlay()">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                                <polygon points="5,3 19,12 5,21"/>
-                            </svg>
-                        </button>
-                        
-                        <button class="control-btn" id="volumeBtn" title="Volume" onclick="toggleMute()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<!-- Video Player Modal (REPLACE your current modal section with this) -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <span class="close" id="close-modal">&times;</span>
+    <div class="modal-header">
+      <img id="modal-image" alt="">
+      <div class="modal-details">
+        <h2 id="modal-title"></h2>
+        <div id="modal-rating"></div>
+        <p id="modal-description"></p>
+      </div>
+    </div>
+    <div class="modal-controls">
+      <select id="server">
+        <option value="vidsrc.cc">vidsrc.cc</option>
+        <option value="vidsrc.me">vidsrc.me</option>
+        <option value="player.videasy.net">player.videasy.net</option>
+      </select>
+      <div id="season-episode-select" style="display:none;">
+        <select id="season-dropdown"></select>
+        <select id="episode-dropdown"></select>
+      </div>
+    </div>
+    <div class="player-container">
+      <iframe id="modal-video" src="" allowfullscreen></iframe>
+      <div id="autoplay-timer" style="display:none;">
+        Next episode plays in <span id="autoplay-counter">10</span> seconds...
+        <button id="cancel-autoplay">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- ...your other HTML below... -->
                                 <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
                                 <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
                             </svg>
