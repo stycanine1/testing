@@ -3,7 +3,7 @@
  * ZETFLIX MAIN APPLICATION
  * ========================================
  * 
- * Updated with FREE video sources and enhanced diagnostics
+ * Simplified implementation based on working reference
  */
 
 // ========================================
@@ -42,7 +42,7 @@ let appState = {
 // ========================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  console.log('🆓 ZetFlix application starting with FREE video sources...');
+  console.log('🆓 ZetFlix application starting...');
   
   // Initialize header scroll effect
   initializeHeaderScroll();
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Initialize search functionality
   initializeSearch();
   
-  console.log('🆓 ZetFlix application ready with FREE streaming!');
+  console.log('🆓 ZetFlix application ready!');
 });
 
 function initializeHeaderScroll() {
@@ -206,7 +206,6 @@ function hideLoadingScreen() {
 }
 
 function showErrorMessage(message) {
-  // You can implement a toast notification or error banner here
   console.error(message);
 }
 
@@ -260,9 +259,9 @@ function playHeroContent() {
   if (!appState.currentContent) return;
   
   const content = appState.currentContent;
-  const type = content.title ? 'movie' : 'tv';
+  content.media_type = content.title ? 'movie' : 'tv';
   
-  playContent(content, type);
+  openPlayerModal(content);
 }
 
 function showHeroInfo() {
@@ -405,7 +404,7 @@ function showSearchSuggestions(suggestions) {
     suggestionsContainer.innerHTML = '<div class="suggestion-item">No results found</div>';
   } else {
     suggestionsContainer.innerHTML = suggestions.map(suggestion => `
-      <div class="suggestion-item" onclick="selectSearchSuggestion(${JSON.stringify(suggestion).replace(/"/g, '&quot;')})">
+      <div class="suggestion-item" onclick="selectSearchSuggestion(${JSON.stringify(suggestion).replace(/"/g, '"')})">
         <div class="suggestion-poster">
           ${suggestion.poster ? `<img src="${suggestion.poster}" alt="${suggestion.title}">` : ''}
         </div>
@@ -604,9 +603,6 @@ function renderHomeContent() {
   
   const rows = [];
   
-  // Add FREE video sources diagnostic test row at the top
-  rows.push(createDiagnosticTestRow());
-  
   // Trending content
   if (appState.trendingMovies.length > 0 || appState.trendingTVShows.length > 0) {
     const trendingContent = [...appState.trendingMovies, ...appState.trendingTVShows];
@@ -649,336 +645,6 @@ function renderHomeContent() {
   }
   
   homeContent.innerHTML = rows.join('');
-}
-
-// ========================================
-// 🧪 FREE VIDEO SOURCES DIAGNOSTIC TEST ROW
-// ========================================
-
-function createDiagnosticTestRow() {
-  return `
-    <div class="content-row">
-      <h2 class="content-row-title">🆓 FREE Video Sources Diagnostics & Tests</h2>
-      <div class="content-row-container">
-        <div class="content-grid">
-          ${createDiagnosticTestItem()}
-          ${createYouTubeSampleItem()}
-          ${createInternetArchiveSampleItem()}
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function createDiagnosticTestItem() {
-  return `
-    <div class="content-item" onclick="testYouTubePlayer()">
-      <div class="content-item-image" style="background: linear-gradient(135deg, #10B981 0%, #059669 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; text-align: center; padding: 20px; flex-direction: column;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">🧪</div>
-        <div style="font-size: 0.9rem; line-height: 1.2;">
-          FREE VIDEO<br>
-          SOURCES<br>
-          DIAGNOSTICS
-        </div>
-        <div class="content-item-overlay">
-          <svg class="content-item-play" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5,3 19,12 5,21"/>
-          </svg>
-        </div>
-        <div class="content-item-rating">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-          </svg>
-          <span>FREE</span>
-        </div>
-      </div>
-      <div class="content-item-info">
-        <h3 class="content-item-title">FREE Video Sources Test</h3>
-        <div class="content-item-meta">
-          <span class="content-item-year">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-            TEST
-          </span>
-          <span class="content-item-type" style="background: rgba(16, 185, 129, 0.2); color: #10B981;">FREE</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function createYouTubeSampleItem() {
-  return `
-    <div class="content-item" onclick="testYouTubeSample()">
-      <div class="content-item-image" style="background: linear-gradient(135deg, #FF0000 0%, #CC0000 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; text-align: center; padding: 20px; flex-direction: column;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">📺</div>
-        <div style="font-size: 0.9rem; line-height: 1.2;">
-          YOUTUBE<br>
-          SAMPLE<br>
-          VIDEO
-        </div>
-        <div class="content-item-overlay">
-          <svg class="content-item-play" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5,3 19,12 5,21"/>
-          </svg>
-        </div>
-        <div class="content-item-rating">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-          </svg>
-          <span>YT</span>
-        </div>
-      </div>
-      <div class="content-item-info">
-        <h3 class="content-item-title">YouTube Sample Video</h3>
-        <div class="content-item-meta">
-          <span class="content-item-year">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-            DEMO
-          </span>
-          <span class="content-item-type" style="background: rgba(255, 0, 0, 0.2); color: #FF0000;">YOUTUBE</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-function createInternetArchiveSampleItem() {
-  return `
-    <div class="content-item" onclick="testInternetArchiveSample()">
-      <div class="content-item-image" style="background: linear-gradient(135deg, #8B5CF6 0%, #7C3AED 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; text-align: center; padding: 20px; flex-direction: column;">
-        <div style="font-size: 2rem; margin-bottom: 10px;">📚</div>
-        <div style="font-size: 0.9rem; line-height: 1.2;">
-          INTERNET<br>
-          ARCHIVE<br>
-          SAMPLE
-        </div>
-        <div class="content-item-overlay">
-          <svg class="content-item-play" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="5,3 19,12 5,21"/>
-          </svg>
-        </div>
-        <div class="content-item-rating">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-            <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
-          </svg>
-          <span>IA</span>
-        </div>
-      </div>
-      <div class="content-item-info">
-        <h3 class="content-item-title">Internet Archive Sample</h3>
-        <div class="content-item-meta">
-          <span class="content-item-year">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="10"/>
-              <polyline points="12,6 12,12 16,14"/>
-            </svg>
-            LEGAL
-          </span>
-          <span class="content-item-type" style="background: rgba(139, 92, 246, 0.2); color: #8B5CF6;">ARCHIVE</span>
-        </div>
-      </div>
-    </div>
-  `;
-}
-
-// ========================================
-// 🧪 SAMPLE VIDEO TEST FUNCTIONS
-// ========================================
-
-function testYouTubeSample() {
-  console.log('🎬 Testing YouTube sample video...');
-  
-  // Show player modal
-  const playerModal = document.getElementById('videoPlayerModal');
-  playerModal.style.display = 'block';
-  
-  // Set player title
-  const playerTitle = document.getElementById('playerTitle');
-  playerTitle.textContent = '📺 YouTube Sample Video Test';
-  
-  // Hide episode selector
-  const episodeSelector = document.getElementById('episodeSelector');
-  episodeSelector.style.display = 'none';
-  
-  // Set up YouTube sample server selector
-  const serverSelect = document.getElementById('serverSelect');
-  serverSelect.innerHTML = `
-    <option value="youtube-sample">YouTube Sample Video (Big Buck Bunny)</option>
-    <option value="youtube-trailer">YouTube Movie Trailer Sample</option>
-    <option value="youtube-music">YouTube Music Video Sample</option>
-    <option value="youtube-educational">YouTube Educational Sample</option>
-  `;
-  
-  // Load YouTube sample
-  loadYouTubeSample();
-  
-  // Initialize player controls
-  initializePlayerControls();
-  
-  // Disable body scroll
-  document.body.style.overflow = 'hidden';
-}
-
-function loadYouTubeSample() {
-  const server = document.getElementById('serverSelect').value;
-  let embedURL = "";
-  
-  switch (server) {
-    case 'youtube-sample':
-      embedURL = "https://www.youtube.com/embed/aqz-KE-bpKQ?autoplay=1&controls=1&rel=0"; // Big Buck Bunny
-      break;
-    case 'youtube-trailer':
-      embedURL = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=1&rel=0"; // Rick Roll (famous sample)
-      break;
-    case 'youtube-music':
-      embedURL = "https://www.youtube.com/embed/kJQP7kiw5Fk?autoplay=1&controls=1&rel=0"; // Despacito
-      break;
-    case 'youtube-educational':
-      embedURL = "https://www.youtube.com/embed/wJa5Ch0O4BI?autoplay=1&controls=1&rel=0"; // Khan Academy sample
-      break;
-  }
-  
-  console.log('📺 Loading YouTube sample:', embedURL);
-  
-  const videoFrame = document.getElementById('videoFrame');
-  const loadingOverlay = document.getElementById('loadingOverlay');
-  const errorOverlay = document.getElementById('errorOverlay');
-  
-  // Show loading
-  loadingOverlay.style.display = 'flex';
-  errorOverlay.style.display = 'none';
-  
-  // Load YouTube video
-  videoFrame.src = embedURL;
-  
-  // Handle load events
-  videoFrame.onload = () => {
-    loadingOverlay.style.display = 'none';
-    console.log('✅ YouTube sample loaded successfully');
-    showSuccessNotification('✅ YouTube sample loaded successfully!');
-  };
-  
-  videoFrame.onerror = () => {
-    loadingOverlay.style.display = 'none';
-    errorOverlay.style.display = 'flex';
-    console.error('❌ Failed to load YouTube sample');
-  };
-}
-
-function testInternetArchiveSample() {
-  console.log('📚 Testing Internet Archive sample...');
-  
-  // Show player modal
-  const playerModal = document.getElementById('videoPlayerModal');
-  playerModal.style.display = 'block';
-  
-  // Set player title
-  const playerTitle = document.getElementById('playerTitle');
-  playerTitle.textContent = '📚 Internet Archive Sample Test';
-  
-  // Hide episode selector
-  const episodeSelector = document.getElementById('episodeSelector');
-  episodeSelector.style.display = 'none';
-  
-  // Set up Internet Archive sample server selector
-  const serverSelect = document.getElementById('serverSelect');
-  serverSelect.innerHTML = `
-    <option value="archive-classic">Classic Movie (Night of the Living Dead)</option>
-    <option value="archive-cartoon">Classic Cartoon (Betty Boop)</option>
-    <option value="archive-documentary">Documentary Sample</option>
-    <option value="archive-educational">Educational Content</option>
-  `;
-  
-  // Load Internet Archive sample
-  loadInternetArchiveSample();
-  
-  // Initialize player controls
-  initializePlayerControls();
-  
-  // Disable body scroll
-  document.body.style.overflow = 'hidden';
-}
-
-function loadInternetArchiveSample() {
-  const server = document.getElementById('serverSelect').value;
-  let embedURL = "";
-  
-  switch (server) {
-    case 'archive-classic':
-      embedURL = "https://archive.org/embed/night_of_the_living_dead_1968";
-      break;
-    case 'archive-cartoon':
-      embedURL = "https://archive.org/embed/BettyBoopCartoons";
-      break;
-    case 'archive-documentary':
-      embedURL = "https://archive.org/embed/TheInternetWarrior";
-      break;
-    case 'archive-educational':
-      embedURL = "https://archive.org/embed/EducationalFilms";
-      break;
-  }
-  
-  console.log('📚 Loading Internet Archive sample:', embedURL);
-  
-  const videoFrame = document.getElementById('videoFrame');
-  const loadingOverlay = document.getElementById('loadingOverlay');
-  const errorOverlay = document.getElementById('errorOverlay');
-  
-  // Show loading
-  loadingOverlay.style.display = 'flex';
-  errorOverlay.style.display = 'none';
-  
-  // Load Internet Archive video
-  videoFrame.src = embedURL;
-  
-  // Handle load events
-  videoFrame.onload = () => {
-    loadingOverlay.style.display = 'none';
-    console.log('✅ Internet Archive sample loaded successfully');
-    showSuccessNotification('✅ Internet Archive sample loaded successfully!');
-  };
-  
-  videoFrame.onerror = () => {
-    loadingOverlay.style.display = 'none';
-    errorOverlay.style.display = 'flex';
-    console.error('❌ Failed to load Internet Archive sample');
-  };
-}
-
-function showSuccessNotification(message) {
-  const successDiv = document.createElement('div');
-  successDiv.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: rgba(16, 185, 129, 0.9);
-    color: white;
-    padding: 12px 16px;
-    border-radius: 8px;
-    font-weight: bold;
-    z-index: 1020;
-    animation: fadeIn 0.3s ease;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  `;
-  successDiv.innerHTML = `
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span>🆓</span>
-      <span>${message}</span>
-    </div>
-  `;
-  document.body.appendChild(successDiv);
-  
-  setTimeout(() => {
-    if (successDiv.parentNode) {
-      successDiv.parentNode.removeChild(successDiv);
-    }
-  }, 4000);
 }
 
 function renderMoviesContent() {
@@ -1163,8 +829,11 @@ function createContentItem(item) {
   const type = item.title ? 'movie' : 'tv';
   const posterUrl = TMDBService.getPosterUrl(item.poster_path);
   
+  // Add media_type for player
+  item.media_type = type;
+  
   return `
-    <div class="content-item" onclick="showContentModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+    <div class="content-item" onclick="openPlayerModal(${JSON.stringify(item).replace(/"/g, '"')})">
       <div class="content-item-image">
         <img src="${posterUrl}" alt="${title}" loading="lazy">
         <div class="content-item-overlay">
@@ -1204,8 +873,11 @@ function createAnimeItem(item) {
   const statusColor = AniListService.getAnimeStatusColor(item.status);
   const imageUrl = AniListService.getAnimeImageUrl(item, 'medium');
   
+  // Add media_type for player
+  item.media_type = 'tv';
+  
   return `
-    <div class="content-item" onclick="showContentModal(${JSON.stringify(item).replace(/"/g, '&quot;')})">
+    <div class="content-item" onclick="openPlayerModal(${JSON.stringify(item).replace(/"/g, '"')})">
       <div class="content-item-image">
         <img src="${imageUrl}" alt="${title}" loading="lazy">
         <div class="content-item-overlay">
@@ -1289,53 +961,6 @@ async function showContentModal(content) {
     modalGenres.innerHTML = '';
   }
   
-  // Update side info with detailed data for TV shows
-  const sideInfoItems = [];
-  
-  if (isAnime) {
-    if (content.type) sideInfoItems.push({ label: 'Type', value: content.type });
-    if (content.episodes) sideInfoItems.push({ label: 'Episodes', value: content.episodes });
-    if (content.status) sideInfoItems.push({ label: 'Status', value: content.status });
-    if (content.source) sideInfoItems.push({ label: 'Source', value: content.source });
-  } else if (isTVShow) {
-    // For TV shows, try to fetch detailed information
-    try {
-      const tvDetails = await TMDBService.getTVShowDetails(content.id);
-      if (tvDetails.number_of_seasons) sideInfoItems.push({ label: 'Seasons', value: tvDetails.number_of_seasons });
-      if (tvDetails.number_of_episodes) sideInfoItems.push({ label: 'Total Episodes', value: tvDetails.number_of_episodes });
-      if (tvDetails.status) sideInfoItems.push({ label: 'Status', value: tvDetails.status });
-      if (tvDetails.episode_run_time && tvDetails.episode_run_time.length > 0) {
-        sideInfoItems.push({ label: 'Episode Runtime', value: `${tvDetails.episode_run_time[0]} min` });
-      }
-      if (content.original_language) sideInfoItems.push({ label: 'Language', value: content.original_language.toUpperCase() });
-    } catch (error) {
-      console.warn('Could not fetch TV show details:', error);
-      if (content.original_language) sideInfoItems.push({ label: 'Language', value: content.original_language.toUpperCase() });
-    }
-  } else {
-    // For movies
-    if (content.original_language) sideInfoItems.push({ label: 'Language', value: content.original_language.toUpperCase() });
-    try {
-      const movieDetails = await TMDBService.getMovieDetails(content.id);
-      if (movieDetails.runtime) sideInfoItems.push({ label: 'Runtime', value: `${movieDetails.runtime} min` });
-      if (movieDetails.budget && movieDetails.budget > 0) {
-        sideInfoItems.push({ label: 'Budget', value: `$${(movieDetails.budget / 1000000).toFixed(1)}M` });
-      }
-      if (movieDetails.revenue && movieDetails.revenue > 0) {
-        sideInfoItems.push({ label: 'Revenue', value: `$${(movieDetails.revenue / 1000000).toFixed(1)}M` });
-      }
-    } catch (error) {
-      console.warn('Could not fetch movie details:', error);
-    }
-  }
-  
-  modalSideInfo.innerHTML = sideInfoItems.map(item => `
-    <div class="modal-info-item">
-      <div class="modal-info-label">${item.label}</div>
-      <div class="modal-info-value">${item.value}</div>
-    </div>
-  `).join('');
-  
   // Store content for play button
   appState.currentContent = content;
   
@@ -1358,17 +983,10 @@ function playModalContent() {
   const isAnime = !!content.mal_id;
   const isMovie = !isAnime && (content.title || content.media_type === 'movie');
   
-  let type;
-  if (isAnime) {
-    type = 'anime';
-  } else if (isMovie) {
-    type = 'movie';
-  } else {
-    type = 'tv';
-  }
+  content.media_type = isAnime ? 'tv' : (isMovie ? 'movie' : 'tv');
   
   closeContentModal();
-  playContent(content, type, type === 'tv' ? 1 : null, type !== 'movie' ? 1 : null);
+  openPlayerModal(content);
 }
 
 // ========================================
@@ -1405,10 +1023,5 @@ window.playModalContent = playModalContent;
 window.playHeroContent = playHeroContent;
 window.showHeroInfo = showHeroInfo;
 window.scrollContentRow = scrollContentRow;
-window.testYouTubePlayer = testYouTubePlayer;
-window.testYouTubeSample = testYouTubeSample;
-window.testInternetArchiveSample = testInternetArchiveSample;
-window.loadYouTubeSample = loadYouTubeSample;
-window.loadInternetArchiveSample = loadInternetArchiveSample;
 
-console.log('🆓 ZetFlix app.js loaded successfully with FREE video sources diagnostics');
+console.log('🆓 ZetFlix app.js loaded successfully with simplified player');

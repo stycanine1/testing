@@ -1,25 +1,36 @@
-// ========== PLAYER & SERVER LOGIC ===========
-let autoplayTimeout = null;
-let currentItem = {};
-// Example structure for currentItem: { id, media_type: "movie"|"tv", ... }
+/**
+ * ========================================
+ * ZETFLIX SIMPLIFIED PLAYER
+ * ========================================
+ * 
+ * Simplified player based on working reference implementation
+ */
 
+let currentItem = {};
+
+// Open player modal with content
 function openPlayerModal(item) {
   currentItem = item;
-  // Set modal info (title, image, description, etc.)
+  
+  // Set modal info
   document.getElementById('modal-title').textContent = item.title || item.name || '';
   document.getElementById('modal-description').textContent = item.overview || '';
   document.getElementById('modal-image').src = item.poster_path 
-    ? "https://image.tmdb.org/t/p/w300" + item.poster_path
+    ? `https://image.tmdb.org/t/p/w300${item.poster_path}`
     : '';
+  
+  // Set rating stars
+  const rating = item.vote_average ? Math.round(item.vote_average / 2) : 0;
+  document.getElementById('modal-rating').innerHTML = '★'.repeat(rating);
 
   // Show episode/season selectors if TV
-  if (item.media_type === "tv") {
-    document.getElementById('season-episode-select').style.display = '';
-    // Populate season and episode (example: assume 1 season, 10 episodes)
-    populateSeasons(1); // You can update season/ep logic to call TMDB if you want
-    populateEpisodes(10);
+  const seasonEpisodeSelect = document.getElementById('season-episode-select');
+  if (item.media_type === "tv" || (!item.title && item.name)) {
+    seasonEpisodeSelect.style.display = 'block';
+    populateSeasons(3); // Default 3 seasons
+    populateEpisodes(10); // Default 10 episodes
   } else {
-    document.getElementById('season-episode-select').style.display = 'none';
+    seasonEpisodeSelect.style.display = 'none';
   }
 
   // Set default server and load video
@@ -41,7 +52,7 @@ function populateSeasons(numSeasons) {
     seasonDropdown.appendChild(opt);
   }
   seasonDropdown.onchange = () => {
-    populateEpisodes(10); // Update for selected season
+    populateEpisodes(10);
     changeServer();
   };
 }
@@ -59,16 +70,17 @@ function populateEpisodes(numEpisodes) {
   episodeDropdown.onchange = changeServer;
 }
 
-// Change video source/player
+// Change video source/server
 function changeServer() {
-  clearAutoplay();
   const server = document.getElementById('server').value;
-  const type = currentItem.media_type === "movie" ? "movie" : "tv";
+  const type = (currentItem.media_type === "movie" || currentItem.title) ? "movie" : "tv";
   let embedURL = "";
-  let id = currentItem.id;
+  const id = currentItem.id;
+  
   if (type === "tv" && document.getElementById('season-episode-select').style.display !== 'none') {
-    const season = document.getElementById('season-dropdown').value;
-    const episode = document.getElementById('episode-dropdown').value;
+    const season = document.getElementById('season-dropdown').value || 1;
+    const episode = document.getElementById('episode-dropdown').value || 1;
+    
     if (server === "vidsrc.cc") {
       embedURL = `https://vidsrc.cc/v2/embed/tv/${id}/${season}/${episode}`;
     } else if (server === "vidsrc.me") {
@@ -76,7 +88,6 @@ function changeServer() {
     } else if (server === "player.videasy.net") {
       embedURL = `https://player.videasy.net/tv/${id}/${season}-${episode}`;
     }
-    setupAutoplayNext(id, season, episode, episodeDropdownLength());
   } else {
     if (server === "vidsrc.cc") {
       embedURL = `https://vidsrc.cc/v2/embed/movie/${id}`;
@@ -86,55 +97,27 @@ function changeServer() {
       embedURL = `https://player.videasy.net/movie/${id}`;
     }
   }
+  
   document.getElementById('modal-video').src = embedURL;
 }
 
-function episodeDropdownLength() {
-  return document.getElementById('episode-dropdown').options.length;
-}
-
-// Autoplay Next Episode
-function setupAutoplayNext(tvId, season, episode, totalEpisodes) {
-  clearAutoplay();
-  const episodeDropdown = document.getElementById('episode-dropdown');
-  const nextIndex = Array.from(episodeDropdown.options).findIndex(opt => opt.value == episode) + 1;
-  if (nextIndex < totalEpisodes) {
-    let counter = 10;
-    document.getElementById('autoplay-timer').style.display = 'block';
-    document.getElementById('autoplay-counter').textContent = counter;
-    autoplayTimeout = setInterval(() => {
-      counter--;
-      document.getElementById('autoplay-counter').textContent = counter;
-      if (counter <= 0) {
-        clearAutoplay();
-        episodeDropdown.selectedIndex = nextIndex;
-        changeServer();
-      }
-    }, 1000);
-    document.getElementById('cancel-autoplay').onclick = clearAutoplay;
-  } else {
-    document.getElementById('autoplay-timer').style.display = 'none';
-  }
-}
-
-function clearAutoplay() {
-  if (autoplayTimeout) {
-    clearInterval(autoplayTimeout);
-    autoplayTimeout = null;
-    document.getElementById('autoplay-timer').style.display = 'none';
-  }
-}
-
-// Modal controls
-document.getElementById('close-modal').onclick = () => {
+// Close modal
+function closeModal() {
   document.getElementById('modal').style.display = 'none';
   document.getElementById('modal-video').src = '';
-  clearAutoplay();
-};
+}
+
+// Modal click outside to close
 window.onclick = function(event) {
-  if (event.target === document.getElementById('modal')) {
-    document.getElementById('close-modal').onclick();
+  const modal = document.getElementById('modal');
+  if (event.target === modal) {
+    closeModal();
   }
 };
 
-// Example: To open modal for a movie, call openPlayerModal({ id: ..., title: ..., overview: ..., poster_path: ..., media_type: "movie" })
+// Export functions to global scope
+window.openPlayerModal = openPlayerModal;
+window.changeServer = changeServer;
+window.closeModal = closeModal;
+window.populateSeasons = populateSeasons;
+window.populateEpisodes = populateEpisodes;
